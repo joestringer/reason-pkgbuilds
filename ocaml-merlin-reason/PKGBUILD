@@ -1,0 +1,39 @@
+# Maintainer: Christian Lentfort <christian+aur.archlinux.org@lentfort.com>
+_pkgname=merlin-reason
+pkgname=ocaml-merlin-reason
+pkgver=0.0.1
+pkgrel=1
+pkgdesc="Context sensitive completion for Reason in Vim and Emacs (ocamlmerlin binary only)"
+arch=('i686' 'x86_64')
+url="https://github.com/the-lambda-church/merlin"
+license=('MIT')
+depends=('ocaml' 'ocaml-findlib' 'ocaml-yojson' 'python2')
+makedepends=('make')
+provides=('merlin' 'ocaml-merlin')
+conflicts=('merlin' 'ocaml-merlin' 'vim-ocaml-merlin-git')
+options=('!strip')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/the-lambda-church/merlin/archive/reason-${pkgver}.tar.gz")
+md5sums=('bb6f6b139c8a0b84a8701ee8f6434bad')
+
+build() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+
+  msg 'Building...'
+  ./configure
+  make
+}
+
+package() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+
+  msg 'Installing license...'
+  install -Dm 644 LICENSE_MIT.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE_MIT.txt"
+
+  msg 'Installing documentation...'
+  for _doc in `find . -maxdepth 1 -type f -name "*.md" -printf '%f\n'` CHANGELOG; do
+    install -Dm 644 ${_doc} "${pkgdir}/usr/share/doc/${pkgname}/${_doc}"
+  done
+
+  msg 'Installing...'
+  install -Dm 755 ocamlmerlin "${pkgdir}/usr/bin/ocamlmerlin"
+}

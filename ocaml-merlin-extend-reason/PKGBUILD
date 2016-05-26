@@ -1,0 +1,31 @@
+# Maintainer: Christian Lentfort <christian+aur.archlinux.org@lentfort.com>
+_pkgname=merlin-extend-reason
+pkgname=ocaml-merlin-extend-reason
+pkgver=0.0.1
+pkgrel=1
+pkgdesc="SDK to extend Merlin"
+arch=('i686' 'x86_64')
+url="https://github.com/the-lambda-church/merlin"
+license=('MIT')
+depends=('ocaml' 'ocaml-merlin-reason')
+makedepends=('make' 'ocaml-findlib' 'cppo')
+options=('!strip')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/let-def/merlin-extend/archive/reason-${pkgver}.tar.gz")
+md5sums=('4e09d6bf3b9087b5a989a33393411d5b')
+
+OCAMLFIND_DESTDIR="${pkgdir}$(ocamlfind printconf destdir)"
+
+build() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+
+  msg 'Building...'
+  make
+}
+
+package() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+  mkdir -p "${pkgdir}/${OCAMLFIND_DESTDIR}"
+
+  env OCAMLFIND_INSTFLAGS="-destdir ${pkgdir}/${OCAMLFIND_DESTDIR}" \
+    make install
+}

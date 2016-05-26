@@ -1,0 +1,38 @@
+# This is an example PKGBUILD file. Use this as a start to creating your own,
+# and remove these comments. For more information, see 'man PKGBUILD'.
+# NOTE: Please fill out the license field for your package! If it is unknown,
+# then please put 'unknown'.
+
+# Maintainer: Your Name <youremail@domain.com>
+_pkgname="ANSITerminal"
+pkgname="ocaml-ansiterminal"
+pkgver=0.6.5
+pkgrel=1
+pkgdesc="ANSITerminal is a module allowing to use the colors and cursor movements on ANSI terminals."
+arch=('i686' 'x86_64')
+url="https://forge.ocamlcore.org/projects/ansiterminal/"
+license=('LGPL3')
+makedepends=('ocaml' 'ocaml-findlib')
+options=('!strip')
+source=("${pkgname}-${pkgver}.tar.gz::https://forge.ocamlcore.org/frs/download.php/1206/${_pkgname}-${pkgver}.tar.gz")
+md5sums=('508022a9a64a0983bc7d3a53139c6b8b')
+
+OCAMLFIND_DESTDIR="${pkgdir}$(ocamlfind printconf destdir)"
+
+build() {
+  cd "${srcdir}/${_pkgname}-${pkgver}" 
+
+  ocaml setup.ml -configure --prefix /usr --destdir "${pkgdir}"
+  ocaml setup.ml -build
+}
+
+package() {
+  cd "${srcdir}/${_pkgname}-${pkgver}" 
+
+  mkdir -p "${pkgdir}/${OCAMLFIND_DESTDIR}"
+
+  env DESTDIR="${pkgdir}" \
+    OCAMLFIND_DESTDIR="${pkgdir}/${OCAMLFIND_DESTDIR}" \
+    OCAMLFIND_LDCONF="ignore" \
+    ocaml setup.ml -install
+}

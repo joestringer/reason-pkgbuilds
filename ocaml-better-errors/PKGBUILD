@@ -1,0 +1,34 @@
+# This is an example PKGBUILD file. Use this as a start to creating your own,
+# and remove these comments. For more information, see 'man PKGBUILD'.
+# NOTE: Please fill out the license field for your package! If it is unknown,
+# then please put 'unknown'.
+
+# Maintainer: Your Name <youremail@domain.com>
+_pkgname="BetterErrors"
+pkgname=ocaml-better-errors
+pkgver=0.0.1
+pkgrel=1
+pkgdesc="Make OCaml Errors Great Again."
+arch=('i686' 'x86_64')
+url="https://github.com/chenglou/BetterErrors"
+license=('MIT')
+depends=('ocaml-re>=1.5.0' 'ocaml-ansiterminal')
+makedepends=('ocaml' 'ocaml-findlib')
+options=('!strip')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/chenglou/${_pkgname}/archive/v${pkgver}.tar.gz")
+md5sums=('aaac92a8c9a6078f4264454c0053e98f')
+
+OCAMLFIND_DESTDIR="${pkgdir}$(ocamlfind printconf destdir)"
+
+build() {
+  cd "${srcdir}/${_pkgname}-${pkgver}" 
+  make
+}
+
+package() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+  mkdir -p "${pkgdir}/${OCAMLFIND_DESTDIR}"
+  env OCAMLFIND_DESTDIR="${pkgdir}/${OCAMLFIND_DESTDIR}" \
+    OCAMLFIND_LDCONF="ignore" \
+    ocamlfind install BetterErrors _build/pkg/META _build/src/*
+}
