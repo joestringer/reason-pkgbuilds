@@ -22,6 +22,8 @@ options=('!strip')
 source=("${pkgname}-${pkgver}.tar.gz::https://github.com/facebook/${pkgname}/archive/${pkgver}.tar.gz")
 md5sums=('c403b0e7018db170292760b9ebf21d23')
 
+OCAMLFIND_DESTDIR="${pkgdir}$(ocamlfind printconf destdir)"
+
 build() {
   cd "${srcdir}/${pkgname}-${pkgver}"
 
@@ -33,7 +35,7 @@ package() {
   cd "${srcdir}/${pkgname}-${pkgver}"
 
   mkdir -p "${pkgdir}/${OCAMLFIND_DESTDIR}"
-  # env OCAMLFIND_DESTDIR="${pkgdir}/${OCAMLFIND_DESTDIR}" \
-  #   OCAMLFIND_LDCONF="ignore" \
-  #   ocamlfind install BetterErrors _build/pkg/META _build/src/*
+  env OCAMLFIND_DESTDIR="${pkgdir}/${OCAMLFIND_DESTDIR}" \
+    OCAMLFIND_LDCONF="ignore" \
+    ocamlfind install reason _build/pkg/META _build/src/*
 }
